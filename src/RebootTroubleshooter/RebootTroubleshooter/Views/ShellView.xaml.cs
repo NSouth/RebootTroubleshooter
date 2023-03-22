@@ -14,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace RebootTroubleshooter
+namespace RebootTroubleshooter.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    public partial class ShellView : MetroWindow
     {
-        public MainWindow()
+        public ShellView()
         {
             InitializeComponent();
         }
