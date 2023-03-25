@@ -77,6 +77,8 @@
                                     <TextBlock Text="{Binding Source}" />
                                     <Label Content="Event Raw Message" />
                                     <TextBlock Text="{Binding Message}" />
+                                    <Label Content="Event Initiated by User" />
+                                    <TextBlock Text="{Binding User}" />
                                     <Button x:Name="ClosePopup" Content="Close" cal:Bind.Model="{Binding}" Margin="10" Padding="5,2" />
                                 </StackPanel>
                             </Border>

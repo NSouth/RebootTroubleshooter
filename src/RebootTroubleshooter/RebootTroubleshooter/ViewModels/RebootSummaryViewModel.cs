@@ -24,8 +24,10 @@ namespace RebootTroubleshooter.ViewModels
 
         public async void LoadRebootEvents()
         {
+            SampleText = "Loading...";
             await Task.Run(() =>
             {
+                RebootEvents.Clear();
                 RebootEvents.AddRange(GetRecentRebootEvents());
             });
             SampleText = "Loaded";
@@ -79,7 +81,7 @@ namespace RebootTroubleshooter.ViewModels
                     {
                         DateTime = x.TimeGenerated,
                         InstanceId = x.InstanceId,
-                        Level = x.EntryType.ToString(),
+                        Level = x.EntryType == 0 ? "Unknown" : x.EntryType.ToString(),
                         Message = x.Message,
                         Source = x.Source,
                         User = x.UserName,
