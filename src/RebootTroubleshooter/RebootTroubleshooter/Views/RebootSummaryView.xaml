@@ -1,11 +1,19 @@
 ﻿<UserControl x:Class="RebootTroubleshooter.Views.RebootSummaryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
+             xmlns:converters="clr-namespace:RebootTroubleshooter.Converters"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RebootTroubleshooter.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:MaxLinesConverter x:Key="MaxLinesConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />
@@ -13,5 +21,64 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding SampleText}" />
         <Button x:Name="LoadRebootEvents" Height="80">Load Reboot Events</Button>
+
+        <ListView ItemsSource="{Binding RebootEvents}"
+                  Grid.Column="1">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="10,10,10,0">
+                            <TextBlock Text="{Binding DateTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
+                               FontSize="12" HorizontalAlignment="Right"/>
+                            <Label Content="Description" FontSize="16"/>
+                            <TextBlock Text="{Binding PlainEnglishDescription, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
+                               TextWrapping="Wrap" Margin="0,5,0,0"/>
+                            <Button x:Name="ShowMore" Content="More" cal:Bind.Model="{Binding}"
+                            Visibility="{Binding IsDescriptionExpanded, Converter={StaticResource BoolToVisibilityConverter}}" 
+                                    />
+                            <TextBlock Text="{Binding SuggestionToPrevent, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
+                               TextWrapping="Wrap" Margin="0,10,0,0"/>
+                            <Button x:Name="ShowRawDetails" Content="Raw Details" cal:Bind.Model="{Binding}"
+                                    />
+                        </StackPanel>
+                        <Grid Grid.Column="1" Background="LightGray" Visibility="{Binding IsDetailsFlyoutOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="3*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,5" Text="Level:" FontSize="12"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,5" Text="{Binding Level}" FontSize="12"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,5" Text="Source:" FontSize="12"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,5" Text="{Binding Source}" FontSize="12"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,5" Text="Message:" FontSize="12"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,5" Text="{Binding Message}" TextWrapping="Wrap" FontSize="12"/>
+                        </Grid>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+        <!--<DataGrid ItemsSource="{Binding RebootEvents}" 
+                  AutoGenerateColumns="False"
+                  Grid.Column="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding DateTime}" />
+                <DataGridTextColumn Header="Level" Binding="{Binding Level}" />
+                <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
+                <DataGridTextColumn Header="Source" Binding="{Binding Source}" />
+                <DataGridTextColumn Header="Plain English Description" Binding="{Binding PlainEnglishDescription}" />
+                <DataGridTextColumn Header="Suggestion to Prevent" Binding="{Binding SuggestionToPrevent}" />
+            </DataGrid.Columns>
+        </DataGrid>-->
     </Grid>
 </UserControl>
