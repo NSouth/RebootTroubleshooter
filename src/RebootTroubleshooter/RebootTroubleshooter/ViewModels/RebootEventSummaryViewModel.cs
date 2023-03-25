@@ -36,13 +36,13 @@ namespace RebootTroubleshooter.ViewModels
 
         public int DescriptionMaxLines => IsDescriptionExpanded ? int.MaxValue : 3;
 
-        private bool _isDetailsFlyoutOpen;
-        public bool IsDetailsFlyoutOpen
+        private bool _isDetailsPopupOpen;
+        public bool IsDetailsPopupOpen
         {
-            get { return _isDetailsFlyoutOpen; }
+            get { return _isDetailsPopupOpen; }
             set
             {
-                _isDetailsFlyoutOpen = value;
+                _isDetailsPopupOpen = value;
                 NotifyOfPropertyChange();
             }
         }
@@ -66,7 +66,9 @@ namespace RebootTroubleshooter.ViewModels
 
         public void ShowRawDetails()
         {
-            IsDetailsFlyoutOpen = !IsDetailsFlyoutOpen;
+            IsDetailsPopupOpen = !IsDetailsPopupOpen;
         }
+
+        public void ClosePopup() => IsDetailsPopupOpen = false;
     }
 }

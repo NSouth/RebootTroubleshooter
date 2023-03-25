@@ -56,7 +56,7 @@ namespace RebootTroubleshooter.ViewModels
                      x.InstanceId == NON_USER_INITIATED_SHUTDOWN_EVENT_ID ||
                      x.InstanceId == NON_CLEAN_SHUTDOWN_EVENT_ID ||
                      (x.InstanceId == BSOD_EVENT_ID && x.Source == "Microsoft-Windows-Kernel-Power")) && 
-                    x.TimeGenerated >= DateTime.Now.AddDays(-7))
+                    x.TimeGenerated >= DateTime.Now.AddDays(-180))
                 .OrderByDescending(x => x.TimeGenerated)
                 .Take(10);
 

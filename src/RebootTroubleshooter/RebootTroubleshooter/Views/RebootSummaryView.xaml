@@ -23,29 +23,68 @@
         <Button x:Name="LoadRebootEvents" Height="80">Load Reboot Events</Button>
 
         <ListView ItemsSource="{Binding RebootEvents}"
+                  Margin="15,0,0,0"
                   Grid.Column="1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Style.Resources>
+                        <Style TargetType="Label">
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="FontSize" Value="12" />
+                            <Setter Property="Margin" Value="0,10,0,0" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </Style.Resources>
+                    <Setter Property="Margin" Value="0,4"/>
+                    <Setter Property="Padding" Value="0,4"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="10,10,10,0">
-                            <TextBlock Text="{Binding DateTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" 
+                        <StackPanel Grid.Column="0" Margin="10,10,10,0" MaxWidth="500">
+                            <TextBlock Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" 
                                FontSize="12" HorizontalAlignment="Right"/>
-                            <Label Content="Description" FontSize="16"/>
+                            <Label Content="Description" />
                             <TextBlock Text="{Binding PlainEnglishDescription, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
-                               TextWrapping="Wrap" Margin="0,5,0,0"/>
+                               TextWrapping="WrapWithOverflow"  />
                             <Button x:Name="ShowMore" Content="More" cal:Bind.Model="{Binding}"
                             Visibility="{Binding IsDescriptionExpanded, Converter={StaticResource BoolToVisibilityConverter}}" 
                                     />
+                            <Label Content="Suggestion to Prevent in the Future" />
                             <TextBlock Text="{Binding SuggestionToPrevent, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
-                               TextWrapping="Wrap" Margin="0,10,0,0"/>
+                               TextWrapping="Wrap" />
                             <Button x:Name="ShowRawDetails" Content="Raw Details" cal:Bind.Model="{Binding}"
-                                    />
+                                    Margin="0,10,0,0"/>
                         </StackPanel>
-                        <Grid Grid.Column="1" Background="LightGray" Visibility="{Binding IsDetailsFlyoutOpen, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                        <Popup Name="DetailsPopup" MaxWidth="600" PlacementTarget="{Binding ElementName=ShowRawDetails}" StaysOpen="False" IsOpen="{Binding IsDetailsPopupOpen}">
+                            <Border BorderThickness="2" BorderBrush="Black" Background="White">
+                                <StackPanel Margin="10">
+                                    <Label Content="Event Date" />
+                                    <TextBlock Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" FontSize="12"/>
+                                    <Label Content="Plain English Description" />
+                                    <TextBlock Text="{Binding PlainEnglishDescription}" />
+                                    <Label Content="Suggestion to Prevent in the Future" />
+                                    <TextBlock Text="{Binding SuggestionToPrevent}" />
+                                    <Label Content="Event Severity Level" />
+                                    <TextBlock Text="{Binding Level}" />
+                                    <Label Content="Event 'Source'" />
+                                    <TextBlock Text="{Binding Source}" />
+                                    <Label Content="Event Raw Message" />
+                                    <TextBlock Text="{Binding Message}" />
+                                    <Button x:Name="ClosePopup" Content="Close" cal:Bind.Model="{Binding}" Margin="10" Padding="5,2" />
+                                </StackPanel>
+                            </Border>
+                        </Popup>
+
+
+
+                        <!--<Grid Grid.Column="1" Background="LightGray" Visibility="{Binding IsDetailsFlyoutOpen, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -61,7 +100,7 @@
                             <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,5" Text="{Binding Source}" FontSize="12"/>
                             <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,5" Text="Message:" FontSize="12"/>
                             <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,5" Text="{Binding Message}" TextWrapping="Wrap" FontSize="12"/>
-                        </Grid>
+                        </Grid>-->
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
