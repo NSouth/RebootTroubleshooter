@@ -1,4 +1,7 @@
 # Reboot Troubleshooter
+
+[Releases](https://github.com/NSouth/RebootTroubleshooter/releases/latest)
+
 Sometimes I wake my Windows PC from sleep or hibernation and am surprised to find that it has rebooted. Why? I don't know. This is a simple app to help me (and others) understand why a recent reboot occurred. It scans the Windows Event Log for reboot events and attempts to display them in a human-readable format. 
 
 # Screenshots
