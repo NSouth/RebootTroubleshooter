@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RebootTroubleshooter.ViewModels
 {
-    public class RebootEventSummaryViewModel : ViewAware
+    public class RebootEventViewModel : ViewAware
     {
         public DateTime DateTime { get; set; }
         public long InstanceId { get; set; }
@@ -18,6 +18,11 @@ namespace RebootTroubleshooter.ViewModels
         public string User { get; set; } = "[Unknown]";
         public string PlainEnglishDescription { get; set; } = string.Empty;
         public string SuggestionToPrevent { get; set; } = string.Empty;
+
+        public string? MessageReason { get; set; }
+        public string? MessageReasonCode { get; set; }
+        public string? MessageReasonCodeHumanReadable { get; set; }
+        public string? MessageShutdownType { get; set; }
 
 
         private bool _isDescriptionExpanded;

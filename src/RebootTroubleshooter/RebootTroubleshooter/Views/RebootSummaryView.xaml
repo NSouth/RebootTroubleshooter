@@ -15,20 +15,29 @@
         <ResourceDictionary>
             <converters:MaxLinesConverter x:Key="MaxLinesConverter" />
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="126" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <TextBlock Text="{Binding SampleText}" />
-        <Button
-            x:Name="LoadRebootEvents"
-            Height="60"
-            VerticalAlignment="Top">
-            Load Reboot Events
-        </Button>
+        <StackPanel VerticalAlignment="Top">
+            <Button
+                x:Name="ShowInfo"
+                Width="126"
+                Height="40">
+                Info
+            </Button>
+            <Button
+                x:Name="LoadRebootEvents"
+                Width="126"
+                Height="40"
+                Margin="0,8,0,0">
+                Load Reboot Events
+            </Button>
+        </StackPanel>
         <Grid Grid.Column="1" Visibility="{Binding AreEventsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <mah:ProgressRing />
@@ -67,32 +76,36 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel
                             Grid.Column="0"
-                            Width="600"
+                            Width="680"
                             Margin="10,10,10,0">
                             <DockPanel HorizontalAlignment="Stretch">
                                 <TextBlock
                                     HorizontalAlignment="Left"
                                     DockPanel.Dock="Left"
                                     FontSize="12"
-                                    Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}"
+                                    Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy h:mm tt}'}"
                                     TextDecorations="Underline" />
                                 <Button
                                     x:Name="ShowRawDetails"
                                     Margin="0,0,0,0"
+                                    Padding="8,4"
                                     HorizontalAlignment="Right"
                                     cal:Bind.Model="{Binding}"
-                                    Content="Raw Details"
+                                    Content="Details"
                                     DockPanel.Dock="Right" />
                             </DockPanel>
                             <Label Margin="0,-4,0,0" Content="Event" />
                             <TextBlock Text="{Binding EventCodeHumanized, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" TextWrapping="WrapWithOverflow" />
                             <Label Content="Description" />
                             <TextBlock Text="{Binding PlainEnglishDescription, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" TextWrapping="WrapWithOverflow" />
-                            <Button
-                                x:Name="ShowMore"
-                                cal:Bind.Model="{Binding}"
-                                Content="More"
-                                Visibility="{Binding IsDescriptionExpanded, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <StackPanel Visibility="{Binding MessageReason, Converter={StaticResource NullToVisibilityConverter}}">
+                                <Label Content="Reason" />
+                                <TextBlock Text="{Binding MessageReason}" TextWrapping="WrapWithOverflow" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding MessageShutdownType, Converter={StaticResource NullToVisibilityConverter}}">
+                                <Label Content="Shutdown Type" />
+                                <TextBlock Text="{Binding MessageShutdownType}" TextWrapping="WrapWithOverflow" />
+                            </StackPanel>
                             <Label Content="Suggestion to Prevent in the Future" />
                             <TextBlock Text="{Binding SuggestionToPrevent, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" TextWrapping="Wrap" />
 
@@ -108,67 +121,44 @@
                                 Background="White"
                                 BorderBrush="Black"
                                 BorderThickness="2">
-                                <StackPanel Margin="10">
-                                    <Label Content="Event Date" />
-                                    <TextBlock FontSize="12" Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" />
-                                    <Label Content="Plain English Description" />
-                                    <TextBlock Text="{Binding PlainEnglishDescription}" />
-                                    <Label Content="Suggestion to Prevent in the Future" />
-                                    <TextBlock Text="{Binding SuggestionToPrevent}" />
-                                    <Label Content="Event Severity Level" />
-                                    <TextBlock Text="{Binding Level}" />
-                                    <Label Content="Event 'Source'" />
-                                    <TextBlock Text="{Binding Source}" />
-                                    <Label Content="Event Raw Message" />
-                                    <TextBlock Text="{Binding Message}" />
-                                    <Label Content="Event Initiated by User" />
-                                    <TextBlock Text="{Binding User}" />
-                                    <Button
-                                        x:Name="ClosePopup"
-                                        Margin="10"
-                                        Padding="5,2"
-                                        cal:Bind.Model="{Binding}"
-                                        Content="Close" />
-                                </StackPanel>
+                                <ScrollViewer>
+
+                                    <StackPanel Margin="10">
+                                        <Label Content="Event Date" />
+                                        <TextBlock FontSize="12" Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" />
+                                        <Label Content="Plain English Description" />
+                                        <TextBlock Text="{Binding PlainEnglishDescription}" TextWrapping="Wrap" />
+                                        <Label Content="Suggestion to Prevent in the Future" />
+                                        <TextBlock Text="{Binding SuggestionToPrevent}" TextWrapping="Wrap" />
+                                        <Label Content="Event Severity Level" />
+                                        <TextBlock Text="{Binding Level}" />
+                                        <Label Content="Event ID" />
+                                        <TextBlock Text="{Binding InstanceId}" />
+                                        <Label Content="Event 'Source'" />
+                                        <TextBlock Text="{Binding Source}" TextWrapping="Wrap" />
+                                        <Label Content="Event Raw Message" />
+                                        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                                        <Label Content="Event Reason Text (if available)" />
+                                        <TextBlock Text="{Binding MessageReason}" TextWrapping="Wrap" />
+                                        <Label Content="Event Reason Code (if available)" />
+                                        <TextBlock Text="{Binding MessageReasonCode}" TextWrapping="Wrap" />
+                                        <Label Content="Event Reason Code Description (if available)" />
+                                        <TextBlock Text="{Binding MessageReasonCodeHumanReadable}" TextWrapping="Wrap" />
+                                        <Label Content="Event Initiated by User" />
+                                        <TextBlock Text="{Binding User}" />
+                                        <Button
+                                            x:Name="ClosePopup"
+                                            Margin="10"
+                                            Padding="5,2"
+                                            cal:Bind.Model="{Binding}"
+                                            Content="Close" />
+                                    </StackPanel>
+                                </ScrollViewer>
                             </Border>
                         </Popup>
-
-
-
-                        <!--<Grid Grid.Column="1" Background="LightGray" Visibility="{Binding IsDetailsFlyoutOpen, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="3*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10,5" Text="Level:" FontSize="12"/>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="10,5" Text="{Binding Level}" FontSize="12"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10,5" Text="Source:" FontSize="12"/>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,5" Text="{Binding Source}" FontSize="12"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="10,5" Text="Message:" FontSize="12"/>
-                            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,5" Text="{Binding Message}" TextWrapping="Wrap" FontSize="12"/>
-                        </Grid>-->
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
-
-        <!--<DataGrid ItemsSource="{Binding RebootEvents}"
-                  AutoGenerateColumns="False"
-                  Grid.Column="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Date" Binding="{Binding DateTime}" />
-                <DataGridTextColumn Header="Level" Binding="{Binding Level}" />
-                <DataGridTextColumn Header="Message" Binding="{Binding Message}" />
-                <DataGridTextColumn Header="Source" Binding="{Binding Source}" />
-                <DataGridTextColumn Header="Plain English Description" Binding="{Binding PlainEnglishDescription}" />
-                <DataGridTextColumn Header="Suggestion to Prevent" Binding="{Binding SuggestionToPrevent}" />
-            </DataGrid.Columns>
-        </DataGrid>-->
     </Grid>
 </UserControl>
