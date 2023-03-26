@@ -11,10 +11,11 @@ namespace RebootTroubleshooter.ViewModels
     {
         public DateTime DateTime { get; set; }
         public long InstanceId { get; set; }
+        public string EventCodeHumanized { get; set; } = string.Empty;
         public string Level { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public string Source { get; set; } = string.Empty;
-        public string User { get; set; } = string.Empty;
+        public string User { get; set; } = "[Unknown]";
         public string PlainEnglishDescription { get; set; } = string.Empty;
         public string SuggestionToPrevent { get; set; } = string.Empty;
 

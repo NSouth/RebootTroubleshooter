@@ -1,27 +1,42 @@
 [
   {
-    "Codes": [ 41 ],
-    "PlainEnglishDescription": "Your computer restarted unexpectedly due to a system crash or blue screen of death (BSOD).",
-    "SuggestionToPrevent": "Ensure your computer is up to date with the latest software updates and drivers, check for malware or viruses, and monitor your computer's temperature to ensure it's not overheating."
+    "EventInfo": {
+      "EventId": 1074,
+      "EventCodeHumanized": "User-initiated shutdown"
+    },
+    "PlainEnglishDescription": "The computer was shut down by a user, such as through the Start menu, pressing the power button, or running the shutdown command.",
+    "SuggestionToPrevent": "Educate users on the proper way to shut down their computer, and discourage them from shutting down the computer through the power button."
   },
   {
-    "Codes": [ 6008 ],
-    "PlainEnglishDescription": "Your computer restarted unexpectedly due to an unexpected shutdown or power loss.",
-    "SuggestionToPrevent": "Ensure your computer is plugged into a surge protector, check your power supply unit (PSU) and power cable for any issues, and consider using a battery backup (UPS)."
+    "EventInfo": {
+      "EventId": 1076,
+      "EventCodeHumanized": "Clean shutdown"
+    },
+    "PlainEnglishDescription": "The computer was shut down gracefully, without any errors or warnings.",
+    "SuggestionToPrevent": "Ensure that all applications and services are properly closed before shutting down the computer."
   },
   {
-    "Codes": [ 1073741824 ],
-    "PlainEnglishDescription": "Your computer restarted unexpectedly due to a system failure.",
-    "SuggestionToPrevent": "Check for and remove malware or viruses, ensure your computer is not overheating, and check your hardware for any failures or errors."
+    "EventInfo": {
+      "EventId": 6008,
+      "EventCodeHumanized": "Unexpected shutdown"
+    },
+    "PlainEnglishDescription": "The computer shut down unexpectedly, without going through a clean shutdown process.",
+    "SuggestionToPrevent": "Check for hardware or software issues that may be causing the unexpected shutdowns."
   },
   {
-    "Codes": [ 1073741859 ],
-    "PlainEnglishDescription": "Your computer restarted unexpectedly due to a system service unexpectedly stopping.",
-    "SuggestionToPrevent": "Check for and remove malware or viruses, ensure your computer is not overheating, and check your hardware for any failures or errors."
+    "EventInfo": {
+      "EventId": 6009,
+      "EventCodeHumanized": "Unclean shutdown"
+    },
+    "PlainEnglishDescription": "The computer was shut down without properly closing all applications and services.",
+    "SuggestionToPrevent": "Ensure that all applications and services are properly closed before shutting down the computer."
   },
   {
-    "Codes": [ 2147489656 ],
-    "PlainEnglishDescription": "Your computer restarted unexpectedly due to a software installation or update.",
-    "SuggestionToPrevent": "Ensure your computer is up to date with the latest software updates and drivers, and avoid installing or updating software unless necessary."
+    "EventInfo": {
+      "EventId": 41,
+      "EventCodeHumanized": "Critical failure"
+    },
+    "PlainEnglishDescription": "The system experienced a critical failure, such as a blue screen of death (BSOD), and had to be restarted.",
+    "SuggestionToPrevent": "Investigate the cause of the critical failure, such as by analyzing crash dumps or system logs."
   }
 ]

@@ -52,49 +52,74 @@ namespace RebootTroubleshooter.ViewModels
             // Load known reboot causes from JSON file
             var knownRebootCauses = LoadKnownRebootCauses("known_reboot_causes.json");
 
-            // Define instance IDs for readability
-            const int USER_INITIATED_SHUTDOWN_EVENT_ID = 1074;
-            const int CLEAN_SHUTDOWN_EVENT_ID = 1076;
-            const int NON_USER_INITIATED_SHUTDOWN_EVENT_ID = 6008;
-            const int NON_CLEAN_SHUTDOWN_EVENT_ID = 6009;
-            const int BSOD_EVENT_ID = 41; // BSOD or other critical failure
+            //// Define instance IDs for readability
+            //const int USER_INITIATED_SHUTDOWN_EVENT_ID = 1074;
+            //const int CLEAN_SHUTDOWN_EVENT_ID = 1076;
+            //const int NON_USER_INITIATED_SHUTDOWN_EVENT_ID = 6008;
+            //const int NON_CLEAN_SHUTDOWN_EVENT_ID = 6009;
+            //const int BSOD_EVENT_ID = 41; // BSOD or other critical failure
 
-            // Get all relevant events from the past 7 days
+            //var events2 = eventLog.Entries
+            //    .Cast<EventLogEntry>()
+            //    .Where(x =>
+            //    /* 
+            //     * By performing a bitwise AND operation with the event's instance ID and the bitmask 0x3FFFFFFF, 
+            //     * you are ignoring the most significant bit, which is used to indicate whether the event is a success or failure audit.
+            //     */
+            //        (x.InstanceId & 0x3FFFFFFF) == USER_INITIATED_SHUTDOWN_EVENT_ID)
+            //    .OrderByDescending(x => x.TimeGenerated)
+            //    .Take(10)
+            //    .ToList();
+
+            //// Get all relevant events from the past 7 days
+            //var events3 = eventLog.Entries
+            //    .Cast<EventLogEntry>()
+            //    .Where(x =>
+            //        (x.InstanceId == USER_INITIATED_SHUTDOWN_EVENT_ID ||
+            //         x.InstanceId == CLEAN_SHUTDOWN_EVENT_ID ||
+            //         x.InstanceId == NON_USER_INITIATED_SHUTDOWN_EVENT_ID ||
+            //         x.InstanceId == NON_CLEAN_SHUTDOWN_EVENT_ID ||
+            //         (x.InstanceId == BSOD_EVENT_ID && x.Source == "Microsoft-Windows-Kernel-Power")) && 
+            //        x.TimeGenerated >= DateTime.Now.AddDays(-180))
+            //    .OrderByDescending(x => x.TimeGenerated)
+            //    .Take(10);
+
             var events = eventLog.Entries
                 .Cast<EventLogEntry>()
                 .Where(x =>
-                    (x.InstanceId == USER_INITIATED_SHUTDOWN_EVENT_ID ||
-                     x.InstanceId == CLEAN_SHUTDOWN_EVENT_ID ||
-                     x.InstanceId == NON_USER_INITIATED_SHUTDOWN_EVENT_ID ||
-                     x.InstanceId == NON_CLEAN_SHUTDOWN_EVENT_ID ||
-                     (x.InstanceId == BSOD_EVENT_ID && x.Source == "Microsoft-Windows-Kernel-Power")) && 
+                /* 
+                 * By performing a bitwise AND operation with the event's instance ID and the bitmask 0x3FFFFFFF, 
+                 * you are ignoring the most significant bit, which is used to indicate whether the event is a success or failure audit.
+                 * https://stackoverflow.com/a/47859949
+                 */
+                    knownRebootCauses.Select(c => c.EventInfo.EventId).Contains((x.InstanceId & 0x3FFFFFFF)) &&
                     x.TimeGenerated >= DateTime.Now.AddDays(-180))
                 .OrderByDescending(x => x.TimeGenerated)
                 .Take(10);
+
+
 
             // Map events to reboot event summaries
             var rebootEvents = events
                 .Select(x =>
                 {
                     // Get the known reboot cause if it exists
+                    var instanceIdWithoutAuditBit = (x.InstanceId & 0x3FFFFFFF);
                     var knownCause = knownRebootCauses
-                        .FirstOrDefault(c => c.Codes.Contains(x.InstanceId));
-                    var description = knownCause != null
-                        ? knownCause.PlainEnglishDescription
-                        : "Your computer restarted unexpectedly due to an unknown reason.";
-                    var suggestion = knownCause != null
-                        ? knownCause.SuggestionToPrevent
-                        : "Check for and remove malware or viruses, ensure your computer is not overheating, and check your hardware for any failures or errors.";
+                        .FirstOrDefault(c => c.EventInfo.EventId == instanceIdWithoutAuditBit);
+                    var description = knownCause?.PlainEnglishDescription ?? "Your computer restarted unexpectedly due to an unknown reason.";
+                    var suggestion = knownCause?.SuggestionToPrevent ?? "Check for and remove malware or viruses, ensure your computer is not overheating, and check your hardware for any failures or errors.";
 
                     // Create the summary object
                     return new RebootEventSummaryViewModel
                     {
                         DateTime = x.TimeGenerated,
                         InstanceId = x.InstanceId,
-                        Level = x.EntryType == 0 ? "Unknown" : x.EntryType.ToString(),
+                        EventCodeHumanized = knownCause?.EventInfo?.EventCodeHumanized ?? "[Unknown]",
+                        Level = x.EntryType == 0 ? "[Unknown]" : x.EntryType.ToString(),
                         Message = x.Message,
                         Source = x.Source,
-                        User = x.UserName,
+                        User = string.IsNullOrWhiteSpace(x.UserName) ? "[Unknown]" : x.UserName,
                         PlainEnglishDescription = description,
                         SuggestionToPrevent = suggestion
                     };
@@ -106,10 +131,17 @@ namespace RebootTroubleshooter.ViewModels
 
         public class RebootCause
         {
-            public List<long> Codes { get; set; } = new List<long>();   
+            public EventInfo EventInfo { get; set; } = new EventInfo();
             public string PlainEnglishDescription { get; set; } = string.Empty;
             public string SuggestionToPrevent { get; set; } = string.Empty;
         }
+
+        public class EventInfo
+        {
+            public long EventId { get; set; } // The value the user would see in the event log
+            public string EventCodeHumanized { get; set; } = string.Empty;
+        }
+
 
         private static List<RebootCause> LoadKnownRebootCauses(string filePath)
         {
