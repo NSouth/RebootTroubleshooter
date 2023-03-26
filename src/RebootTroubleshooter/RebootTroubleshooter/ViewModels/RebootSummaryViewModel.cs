@@ -15,6 +15,14 @@ namespace RebootTroubleshooter.ViewModels
         private string _sampleText = "Loading...";
         public string SampleText { get => _sampleText; set { _sampleText = value; NotifyOfPropertyChange(); } }
 
+        private bool _areEventsLoading = true;
+
+        public bool AreEventsLoading
+        {
+            get => _areEventsLoading;
+            set => Set(ref _areEventsLoading, value);
+        }
+
         public BindableCollection<RebootEventSummaryViewModel> RebootEvents { get; set; } = new BindableCollection<RebootEventSummaryViewModel>();
 
         public RebootSummaryViewModel()
@@ -25,12 +33,14 @@ namespace RebootTroubleshooter.ViewModels
         public async void LoadRebootEvents()
         {
             SampleText = "Loading...";
+            AreEventsLoading = true;
             await Task.Run(() =>
             {
                 RebootEvents.Clear();
                 RebootEvents.AddRange(GetRecentRebootEvents());
             });
             SampleText = "Loaded";
+            AreEventsLoading = false;
         }
 
         private static IList<RebootEventSummaryViewModel> GetRecentRebootEvents()

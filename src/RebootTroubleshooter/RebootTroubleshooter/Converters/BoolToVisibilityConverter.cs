@@ -2,6 +2,9 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows;
+using Microsoft.VisualBasic;
+using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace RebootTroubleshooter.Converters
 {
@@ -9,12 +12,20 @@ namespace RebootTroubleshooter.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool boolValue)
+            bool isVisible = System.Convert.ToBoolean(value);
+            bool isInverted = false;
+
+            if (parameter is string parameterString && parameterString.Equals("Inverse", StringComparison.OrdinalIgnoreCase))
             {
-                return boolValue ? Visibility.Visible : Visibility.Collapsed;
+                isInverted = true;
             }
 
-            return Visibility.Collapsed;
+            if (isInverted)
+            {
+                isVisible = !isVisible;
+            }
+
+            return isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -3,11 +3,12 @@
              xmlns:cal="clr-namespace:Caliburn.Micro;assembly=Caliburn.Micro.Platform"
              xmlns:converters="clr-namespace:RebootTroubleshooter.Converters"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RebootTroubleshooter.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="900">
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:MaxLinesConverter x:Key="MaxLinesConverter" />
@@ -20,11 +21,20 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding SampleText}" />
-        <Button x:Name="LoadRebootEvents" Height="80">Load Reboot Events</Button>
-
+        <Button x:Name="LoadRebootEvents" Height="60" VerticalAlignment="Top">Load Reboot Events</Button>
+        <Grid Grid.Column="1" Visibility="{Binding AreEventsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <mah:ProgressRing />
+                <TextBlock Text="Loading recent reboot events..." 
+                           Margin="0,12,0,0"
+                           FontSize="14"/>
+            </StackPanel>
+        </Grid>
         <ListView ItemsSource="{Binding RebootEvents}"
                   Margin="15,0,0,0"
-                  Grid.Column="1">
+                  Grid.Column="1"
+                  Visibility="{Binding AreEventsLoading, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Style.Resources>
@@ -46,10 +56,14 @@
                             <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="2*" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Margin="10,10,10,0" MaxWidth="500">
-                            <TextBlock Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" 
-                               FontSize="12" HorizontalAlignment="Right"/>
-                            <Label Content="Description" />
+                        <StackPanel Grid.Column="0" Margin="10,10,10,0" MaxWidth="600">
+                            <DockPanel HorizontalAlignment="Stretch">
+                                <TextBlock DockPanel.Dock="Left" Text="{Binding DateTime, StringFormat='{}{0:dddd, MMMM d, yyyy - h:mm tt}'}" TextDecorations="Underline"
+                               FontSize="12" HorizontalAlignment="Left"/>
+                                <Button x:Name="ShowRawDetails" Content="Raw Details" DockPanel.Dock="Right" HorizontalAlignment="Right" cal:Bind.Model="{Binding}"
+                                    Margin="0,0,0,0"/>
+                            </DockPanel>
+                            <Label Content="Description" Margin="0,-4,0,0" />
                             <TextBlock Text="{Binding PlainEnglishDescription, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
                                TextWrapping="WrapWithOverflow"  />
                             <Button x:Name="ShowMore" Content="More" cal:Bind.Model="{Binding}"
@@ -58,8 +72,7 @@
                             <Label Content="Suggestion to Prevent in the Future" />
                             <TextBlock Text="{Binding SuggestionToPrevent, Converter={StaticResource MaxLinesConverter}, ConverterParameter='3'}" 
                                TextWrapping="Wrap" />
-                            <Button x:Name="ShowRawDetails" Content="Raw Details" cal:Bind.Model="{Binding}"
-                                    Margin="0,10,0,0"/>
+
                         </StackPanel>
 
                         <Popup Name="DetailsPopup" MaxWidth="600" PlacementTarget="{Binding ElementName=ShowRawDetails}" StaysOpen="False" IsOpen="{Binding IsDetailsPopupOpen}">
